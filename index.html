@@ -76,12 +76,55 @@
     border-style: dashed;
     border-radius: 1px;
   }
+  /*button {
+    cursor: pointer;
+    border-width: thin;
+    border-radius: 4px;
+    outline: none;
+  }*/
+
+  button::selection,
+  button:active,
+  button:focus {
+    /*cursor: pointer;*/
+    /*border-width: thin;*/
+    /*border-radius: 4px;*/
+    /*outline: none;*/
+    /*outline-style: solid;*/
+    /*outline-color: red;*/
+    /*background-color: red;*/
+  }
 </style>
 
 <body>
   <div class="container">
-    <h1>SVG DEMO</h1>
-    <p>Click, hold and drag on the edges of the rectangle to adjust it's shape!</p>
+    <!-- <h1>SVG DEMO</h1>
+    <p>Click, hold and drag on the edges of the rectangle to adjust it's shape!</p> -->
+    <div>
+      <form>
+        <div style="width: 9rem; height: auto; background-color: none">
+          <span style="display: block; margin-top: 6px">Width:  <input type="text" name="width" placeholder="Name *" style="width: 5rem; float: right"></span>
+          <span style="display: block; margin-top: 6px">Height: <input type="text" name="height" placeholder="Name *" style="width: 5rem; float: right"></span>
+        </div>
+        <button type="submit">submit</button>
+      </form>
+    </div>
+    <br>
+    <span>
+      <button type="button" name="partition">partition</button>
+      <button type="button" name="remove">remove</button>
+      <button type="button" name="remove">conceal</button>
+    </span>
+    <div>
+      <span><input type="radio" name="partition-type" value="single" checked="checked">single partition</input></span>
+      <span><input type="radio" name="partition-type" value="equal">equal partitions</input></span>
+    </div>
+    <div>
+      <span><input type="radio" name="partition-orientation" value="horizontal" checked="checked">horizontal</input></span>
+      <span><input type="radio" name="partition-orientation" value="vertical">vertical</input></span>
+
+    </div>
+    <br>
     <svg class="svg-viewport" viewbox="-200 -200 400 400" transform="scale(1, -1)">
         <!-- <line id="seg0" class="lineseg" x1="-25" y1="0" x2="25" y2="0"/>
         <line id="seg1" class="lineseg" x1="25" y1="0" x2="25" y2="50"/>
