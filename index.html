@@ -101,19 +101,19 @@
     <!-- <h1>SVG DEMO</h1>
     <p>Click, hold and drag on the edges of the rectangle to adjust it's shape!</p> -->
     <div>
-      <form>
+      <form id="form-overall">
         <div style="width: 9rem; height: auto; background-color: none">
           <span style="display: block; margin-top: 6px">Width:  <input type="text" name="width" placeholder="Name *" style="width: 5rem; float: right"></span>
           <span style="display: block; margin-top: 6px">Height: <input type="text" name="height" placeholder="Name *" style="width: 5rem; float: right"></span>
         </div>
-        <button type="submit">submit</button>
+        <button>submit</button>
       </form>
     </div>
     <br>
     <span>
       <button type="button" name="partition">partition</button>
       <button type="button" name="remove">remove</button>
-      <button type="button" name="remove">conceal</button>
+      <button type="button" name="conceal">conceal</button>
     </span>
     <div>
       <span><input type="radio" name="partition-type" value="single" checked="checked">single partition</input></span>
@@ -125,17 +125,9 @@
 
     </div>
     <br>
-    <svg class="svg-viewport" viewbox="-200 -200 400 400" transform="scale(1, -1)">
-        <!-- <line id="seg0" class="lineseg" x1="-25" y1="0" x2="25" y2="0"/>
-        <line id="seg1" class="lineseg" x1="25" y1="0" x2="25" y2="50"/>
-        <line id="seg2" class="lineseg" x1="25" y1="50" x2="-25" y2="50"/>
-        <line id="seg3" class="lineseg" x1="-25" y1="50" x2="-25" y2="0"/>
-        <rect id="rec" x="-50" y="10" width="70" height="40"> -->
-        <!-- <circle id="corner-ul" class="corner" cx="100" cy="100"/>
-        <circle id="corner-ur" class="corner" cx="300" cy="100"/>
-        <circle id="corner-lr" class="corner" cx="300" cy="300"/>
-        <circle id="corner-ll" class="corner" cx="100" cy="300"/> -->
-        <circle id="corner-ll" class="origin" cx="0" cy="0"/>
+    <svg id="case-svg" class="svg-viewport" viewbox="-200 -200 400 400" transform="scale(1, -1)">
+      <!-- <circle id="corner-ll" class="origin" cx="0" cy="0"/> -->
+      <rect x="100" y="0" width="50" height="100">
     </svg>
 
   </div>
