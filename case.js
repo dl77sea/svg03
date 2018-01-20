@@ -41,14 +41,21 @@ class Node {
   }
 }
 
+function deleteTouchFace(clickedNode) {
+  console.log("delete this node's face in 3d version: ", clickedNode)
+}
+
 // use for naming IDs uniquely
 let idTicker = 0
 
 //partition: adds a stick to clicked on face node, and two children (one for each partition)
 function partition(clickedFaceNode, faceEventX, faceEventY, orientation) {
+  console.log("entered partition(): ", clickedFaceNode)
+
+  //delete touch face from clicked face's node (useful for 3d version)
+  deleteTouchFace(clickedFaceNode)
 
   //add children and stick
-
   if (orientation === "hrz") {
     //hrz
 
@@ -99,6 +106,9 @@ function partition(clickedFaceNode, faceEventX, faceEventY, orientation) {
       idTicker,
       stickVrt))
   }
+
+  plotPartition(clickedFaceNode.children[0]) //attach a touch face
+  plotPartition(clickedFaceNode.children[1]) //attach a touch face and a stick
 }
 
 function partitionEquals(clickedFaceNode, divisions, orientation) {
@@ -125,7 +135,6 @@ function partitionEquals(clickedFaceNode, divisions, orientation) {
         clickedFaceNode.lowerRightY + partitionHeight * i,
         idTicker,
         stick))
-
     }
   }
 
@@ -148,23 +157,25 @@ function partitionEquals(clickedFaceNode, divisions, orientation) {
         stick))
     }
   }
+  //attach touch faces
+  for (child of clickedFaceNode.children) {
+    plotPartition(child)
+  }
 }
 
 // const nodeA = new Node(0,10,10,0,0, stickNone)
-
 //ui modes
 let orientation = null
 
 function traverseTree(fn) {
+  //handle node 0
+  fn(rootNode)
+
+  // handle rest of nodes in tree
   let nodes = [rootNode]
 
   while (nodes.length > 0) {
     let node = nodes.pop()
-
-    // //handle node 0
-    // if(node)
-    // fn(node)
-
     if (node.children.length > 0) {
       for (node of node.children) {
         fn(node)
@@ -197,15 +208,80 @@ function createLine(x1, y1, x2, y2, id) {
   return line
 }
 
+function getSvgPoint(domX, domY) {
+  let pt = svgEl.createSVGPoint();
+  pt.x = domX;
+  pt.y = domY;
+  let svgP = pt.matrixTransform(svgEl.getScreenCTM().inverse())
+  return svgP;
+}
 
+function getFaceHitPt(event) {
+  let recOriginX = event.target.getAttribute('x')
+  let recOriginY = event.target.getAttribute('y')
+
+  let svgHitPt = getSvgPoint(event.clientX, event.clientY)
+
+  recHitPt = {
+    x: svgHitPt.x - recOriginX,
+    y: svgHitPt.y - recOriginY
+  }
+
+  return recHitPt
+}
+
+function faceOnDown(event) {
+  let hitPt = getFaceHitPt(event)
+
+  //put a stick here
+  // console.log()
+  //event.target.getAttribute('data')
+  radioButtonsPartitionType = document.getElementsByName('partition-orientation')
+
+  if (radioButtonsPartitionType[0].checked) {
+    orientation = "hrz"
+  } else {
+    orientation = "vrt"
+  }
+
+  // partition(findNode(parseInt(event.target.getAttribute('data'))), hitPt.x, hitPt.y, orientation)
+  partitionEquals(findNode(parseInt(event.target.getAttribute('data'))), 3, orientation)
+}
+
+function createRect(x, y, w, h, id) {
+  // <rect x="100" y="0" width="50" height="100">
+  let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+  rect.setAttribute('id', "face" + id)
+  rect.setAttribute('data', id)
+  rect.setAttribute('class', "touchface")
+  rect.setAttribute('x', x)
+  rect.setAttribute('y', y)
+  rect.setAttribute('width', w)
+  rect.setAttribute('height', h)
+
+  rect.addEventListener('mousedown', faceOnDown)
+  return rect
+}
 
 function plotPartition(node) {
+  console.log(node.children)
+  // plot touch rectangles (for every empty node)
+  if (node.children.length === 0) {
+    // <rect x="100" y="0" width="50" height="100">
+    console.log("rect")
+    console.log("x: ", node.upperLeftX, "y: ", node.lowerRightY, "w: ", node.width, "h: ", node.height, "id: ", node.faceId)
+    let rect = createRect(node.upperLeftX, node.lowerRightY, node.width, node.height, node.faceId)
+    console.log(rect)
+    svgEl.append(rect)
+  }
 
+  // plot partition line (for every node with an hrz or vrt true)
   if (node.hrz) {
     //on upperLeftY
     let line = createLine(node.upperLeftX, node.upperLeftY, node.lowerRightX, node.upperLeftY, node.faceId)
     svgEl.append(line)
   }
+
   if (node.vrt) {
     console.log(node)
     // on lowerRightX
@@ -225,7 +301,6 @@ function plotCase(w, h) {
   idTicker = 0;
 
   while (svgEl.firstChild) {
-    console.log("....", svgEl.firstChild)
     svgEl.removeChild(svgEl.firstChild);
   }
 
@@ -236,6 +311,7 @@ function plotCase(w, h) {
     stickNone)
 
   // partition(rootNode, 3, 75, "hrz")
+
   // partitionEquals(findNode(2), 3, "vrt")
   // partition(findNode(4), 3, 38, "hrz")
   // partitionEquals(findNode(5), 3, "hrz")
@@ -250,7 +326,7 @@ function plotCase(w, h) {
   svgEl.append(lineRight)
   svgEl.append(lineBottom)
   svgEl.append(lineLeft)
-
+  console.log("splarf")
   traverseTree(plotPartition)
 }
 
@@ -260,8 +336,8 @@ document.getElementById('form-overall').addEventListener('submit', (event) => {
 })
 
 let partitionTypes = document.getElementsByName('partition-type')
-for(pt of partitionTypes) {
-  if(pt.checked === true) {
+for (pt of partitionTypes) {
+  if (pt.checked === true) {
     console.log(pt.value)
   }
 }
