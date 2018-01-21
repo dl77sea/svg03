@@ -31,7 +31,7 @@
   .lineseg {
     cursor: pointer;
     stroke: rgb(0, 0, 0);
-    stroke-width: 4;
+    stroke-width: 12;
     /*stroke-linecap: square;*/
   }
 
@@ -51,7 +51,7 @@
   .lineseg:hover {
     stroke: rgb(0, 255, 255);
     /*stroke-linecap: square;*/
-    stroke-width: 4;
+    stroke-width: 12;
   }
 
   .linesegselected {
@@ -128,16 +128,16 @@
     </div>
     <br>
     <span>
-      <button type="button" name="partition">partition</button>
-      <button type="button" name="remove">remove</button>
-      <button type="button" name="conceal">conceal</button>
+      <button type="button" id="button-partition">divide opening</button>
+      <button type="button" id="button-delete">delete</button>
+      <button type="button" id="button-move">move partition</button>
+      <button type="button" id="button-conceal">conceal opening</button>
     </span>
     <div>
       <form id="form-partitions">
         <span><input type="radio" name="partition-type" value="single" checked="checked">single partition</input></span>
         <span><input type="radio" name="partition-type" value="equal">equal partitions</input><input id="input-parteq" class="input-parteq" type="number" min="3" max="12" value="33" required="true"></input></span>
         <!-- <input type="submit"> -->
-
       </form>
     </div>
     <div>

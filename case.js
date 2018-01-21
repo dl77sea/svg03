@@ -16,7 +16,8 @@ const stickNone = new Stick("")
 class Node {
   //get click event origin x and y, orientation mode (assume event coords already translated to face clicked)
   constructor(faceUlX, faceUlY, faceLrX, faceLrY, dataId, stick) {
-    //ID
+    //ID (an integer)
+    //("face" or "seg" prefixes are appended to reference html elements)
     this.faceId = dataId
 
     //face upper left, lower right
@@ -200,6 +201,7 @@ function snarf(node) {
 function createLine(x1, y1, x2, y2, id) {
   let line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
   line.setAttribute('id', "seg" + id)
+  line.setAttribute('data', id)
   line.setAttribute('class', 'lineseg')
   line.setAttribute('x1', x1)
   line.setAttribute('y1', y1)
@@ -253,7 +255,7 @@ function faceOnDown(event) {
     }
   }
 
-  if(partitionType==="single"){
+  if (partitionType === "single") {
     partition(findNode(parseInt(event.target.getAttribute('data'))), hitPt.x, hitPt.y, orientation)
   } else {
     partitionEquals(findNode(parseInt(event.target.getAttribute('data'))), partitionNums, orientation)
@@ -261,19 +263,37 @@ function faceOnDown(event) {
 
 }
 
+var panelThickness = 4;
+
 function createRect(x, y, w, h, id) {
   // <rect x="100" y="0" width="50" height="100">
   let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
   rect.setAttribute('id', "face" + id)
   rect.setAttribute('data', id)
   rect.setAttribute('class', "touchface")
-  rect.setAttribute('x', x)
-  rect.setAttribute('y', y)
-  rect.setAttribute('width', w)
-  rect.setAttribute('height', h)
+  rect.setAttribute('x', x + panelThickness / 2)
+  rect.setAttribute('y', y - panelThickness / 2)
+  rect.setAttribute('width', w - panelThickness / 2)
+  rect.setAttribute('height', h - panelThickness / 2)
 
   rect.addEventListener('mousedown', faceOnDown)
   return rect
+}
+
+function getEditState() {
+  return "move"
+}
+
+//refered to from partition (line) callbacks to delegate behavior depending on edit stae
+function partitionEvent(editState, line) {
+  console.log("entere partitionEvent")
+  console.log(line.getAttribute('data'))
+
+  if (getEditState() === "move") {
+    movePartition(findNode(parseInt(line.getAttribute('data'))))
+    console.log("move")
+    console.log(line)
+  }
 }
 
 function plotPartition(node) {
@@ -281,20 +301,26 @@ function plotPartition(node) {
   // plot touch rectangles (for every empty node)
   if (node.children.length === 0) {
     // <rect x="100" y="0" width="50" height="100">
-    console.log("rect")
-    console.log("x: ", node.upperLeftX, "y: ", node.lowerRightY, "w: ", node.width, "h: ", node.height, "id: ", node.faceId)
     let rect = createRect(node.upperLeftX, node.lowerRightY, node.width, node.height, node.faceId)
-    console.log(rect)
+
     svgEl.append(rect)
   }
 
   // plot partition line (for every node with an hrz or vrt true)
+
+  //hrz plotted on upperLeftY
   if (node.hrz) {
     //on upperLeftY
     let line = createLine(node.upperLeftX, node.upperLeftY, node.lowerRightX, node.upperLeftY, node.faceId)
+
+    line.addEventListener('mousedown', function(event) {
+      partitionEvent(getEditState(), line)
+    })
+
     svgEl.append(line)
   }
 
+  //vrt plotted on upperLeftX
   if (node.vrt) {
     console.log(node)
     // on lowerRightX
@@ -324,7 +350,6 @@ function plotCase(w, h) {
     stickNone)
 
   // partition(rootNode, 3, 75, "hrz")
-
   // partitionEquals(findNode(2), 3, "vrt")
   // partition(findNode(4), 3, 38, "hrz")
   // partitionEquals(findNode(5), 3, "hrz")
@@ -340,8 +365,43 @@ function plotCase(w, h) {
   svgEl.append(lineBottom)
   svgEl.append(lineLeft)
   console.log("splarf")
+
+  //this will only ever plot node0 bc this is only called on initial run
+  //(rest of partitions are plotted directly on creation)
   traverseTree(plotPartition)
 }
+
+function movePartition(node) {
+  // console.log('movePartition: ', node)
+  //hrz
+  let hrzUpdatePartitions = []
+  if (node.hrz) {
+    console.log("movePartition hrz")
+    //find all common connections on partition by line-start or end y values
+    //hrz plotted on upperLeftY
+    let hrzPartitionY = node.upperLeftY
+    traverseTree(function(currentNode) {
+      console.log(currentNode.faceId)
+      console.log("hrzPartitionY: ", hrzPartitionY)
+      // console.log("currentNode upperLeftX: ", currentNode.upperLeftX)
+      if (
+        (currentNode.faceId !== node.faceId) &&
+        (currentNode.vrt) &&
+        (currentNode.upperLeftY === hrzPartitionY || currentNode.lowerRightY === hrzPartitionY)
+      ) {
+        // console.log("blarf")
+        console.log(currentNode)
+        // hrzUpdatePartitions.push(findNode(parseInt(event.target.getAttribute('data'))))
+      }
+    })
+  }
+  //vrt
+  if (node.orientation === "vrt") {
+    //find all common connections on partition by line-start or end x values
+    //vrt plotted on upperLeftX
+  }
+}
+
 
 document.getElementById('form-overall').addEventListener('submit', (event) => {
   event.preventDefault();
@@ -353,54 +413,14 @@ document.getElementById('input-parteq').oninput = function(event) {
     this.value = this.value.slice(0, 2);
 }
 
-// document.getElementById('form-partitions').onblur = function(event) {
-//   console.log("asfd")
-//   this.validateFormf();
-// }
-// document.forms["form-partitions"].addEventListener('invalid', function() {
-//   //Optional response here.
-//   document.getElementById('input-parteq').reportValidity();
-// }, false);
-//
-// document.forms["form-partitions"].addEventListener('submit', function() {
-//   document.forms["form-partitions"].reportValidity();
-//   document.getElementById('input-parteq').reportValidity();
-// }, false);
-
-// document.getElementById('form-partitions').addEventListener('submit', function(event){event.preventDefault()});
-// document.querySelector('#report-validity').addEventListener('click', function() {
-//   var isValid = document.querySelector('#sample-form').reportValidity();
-//   ChromeSamples.setStatus('The form ' + (isValid ? 'is' : 'is not') + ' valid.');
-// });
-
-// reportButton.addEventListener("click", function() {
-//   var reportVal = form.reportValidity();
-//   output.innerHTML = "reportValidity returned: " + reportVal;
-// });
-// document.querySelector('#form-partitions').reportValidity();
 function showVMessages() {
   document.querySelector('#form-partitions').reportValidity();
 }
 document.getElementById('input-parteq').onblur = function(event) {
   console.log(document.querySelector('#form-partitions'))
-  setTimeout(showVMessages, 10) 
-  // this.reportValidity();
-  // document.forms['form-partitions'].reportValidity();
-  // document.getElementById('input-parteq').reportValidity();
-  // this.submit()
-  // this.validateForm();
-
-  // document.getElementById('input-parteq').submit();
-  // document.getElementById('input-parteq').validateForm();
-  // this.validateForm();
+  setTimeout(showVMessages, 10)
 }
-//
-// document.forms["form-partitions"].addEventListener('onblur', function() {
-//   console.log("f")
-//   document.getElementById('input-parteq').reportValidity();
-// }, false);
-//build a tree
-// orientation: "hrz" "vrt"
 
-// console.log("---")
-// traverseTree(7, snarf)
+document.getElementById('button-move').onclick = function(event) {
+  console.log("snarf")
+}
