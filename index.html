@@ -78,7 +78,7 @@
   }
 
   .touchface {
-    fill: rgb(255,0,0);
+    fill: rgb(255, 0, 0);
     fill-opacity: 0.0;
   }
   /*button {
@@ -87,6 +87,10 @@
     border-radius: 4px;
     outline: none;
   }*/
+
+  .input-parteq {
+    margin-left: 0.25rem;
+  }
 
   button::selection,
   button:active,
@@ -99,7 +103,15 @@
     /*outline-color: red;*/
     /*background-color: red;*/
   }
+
+  input:invalid {
+    border: 2px solid red;
+  }
+  /*input:valid {
+    border: 2px solid black;
+  }*/
 </style>
+
 
 <body>
   <div class="container">
@@ -121,18 +133,20 @@
       <button type="button" name="conceal">conceal</button>
     </span>
     <div>
-      <span><input type="radio" name="partition-type" value="single" checked="checked">single partition</input></span>
-      <span><input type="radio" name="partition-type" value="equal">equal partitions</input></span>
+      <form id="form-partitions">
+        <span><input type="radio" name="partition-type" value="single" checked="checked">single partition</input></span>
+        <span><input type="radio" name="partition-type" value="equal">equal partitions</input><input id="input-parteq" class="input-parteq" type="number" min="3" max="12" value="33" required="true"></input></span>
+        <!-- <input type="submit"> -->
+
+      </form>
     </div>
     <div>
       <span><input type="radio" name="partition-orientation" value="horizontal" checked="checked">horizontal</input></span>
       <span><input type="radio" name="partition-orientation" value="vertical">vertical</input></span>
-
     </div>
     <br>
     <svg id="case-svg" class="svg-viewport" viewbox="-200 -200 400 400" transform="scale(1, -1)">
       <!-- <circle id="corner-ll" class="origin" cx="0" cy="0"/> -->
-
     </svg>
 
   </div>

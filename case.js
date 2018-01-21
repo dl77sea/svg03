@@ -244,8 +244,21 @@ function faceOnDown(event) {
     orientation = "vrt"
   }
 
-  // partition(findNode(parseInt(event.target.getAttribute('data'))), hitPt.x, hitPt.y, orientation)
-  partitionEquals(findNode(parseInt(event.target.getAttribute('data'))), 3, orientation)
+  let partitionType
+  let partitionTypes = document.getElementsByName('partition-type')
+  for (pt of partitionTypes) {
+    if (pt.checked === true) {
+      partitionType = pt.value
+      partitionNums = document.getElementById('input-parteq').value
+    }
+  }
+
+  if(partitionType==="single"){
+    partition(findNode(parseInt(event.target.getAttribute('data'))), hitPt.x, hitPt.y, orientation)
+  } else {
+    partitionEquals(findNode(parseInt(event.target.getAttribute('data'))), partitionNums, orientation)
+  }
+
 }
 
 function createRect(x, y, w, h, id) {
@@ -335,14 +348,57 @@ document.getElementById('form-overall').addEventListener('submit', (event) => {
   plotCase(event.target.width.value, event.target.height.value)
 })
 
-let partitionTypes = document.getElementsByName('partition-type')
-for (pt of partitionTypes) {
-  if (pt.checked === true) {
-    console.log(pt.value)
-  }
+document.getElementById('input-parteq').oninput = function(event) {
+  if (this.length > 2)
+    this.value = this.value.slice(0, 2);
 }
 
+// document.getElementById('form-partitions').onblur = function(event) {
+//   console.log("asfd")
+//   this.validateFormf();
+// }
+// document.forms["form-partitions"].addEventListener('invalid', function() {
+//   //Optional response here.
+//   document.getElementById('input-parteq').reportValidity();
+// }, false);
+//
+// document.forms["form-partitions"].addEventListener('submit', function() {
+//   document.forms["form-partitions"].reportValidity();
+//   document.getElementById('input-parteq').reportValidity();
+// }, false);
 
+// document.getElementById('form-partitions').addEventListener('submit', function(event){event.preventDefault()});
+// document.querySelector('#report-validity').addEventListener('click', function() {
+//   var isValid = document.querySelector('#sample-form').reportValidity();
+//   ChromeSamples.setStatus('The form ' + (isValid ? 'is' : 'is not') + ' valid.');
+// });
+
+// reportButton.addEventListener("click", function() {
+//   var reportVal = form.reportValidity();
+//   output.innerHTML = "reportValidity returned: " + reportVal;
+// });
+// document.querySelector('#form-partitions').reportValidity();
+function showVMessages() {
+  document.querySelector('#form-partitions').reportValidity();
+}
+document.getElementById('input-parteq').onblur = function(event) {
+  console.log(document.querySelector('#form-partitions'))
+  setTimeout(showVMessages, 10) 
+  // this.reportValidity();
+  // document.forms['form-partitions'].reportValidity();
+  // document.getElementById('input-parteq').reportValidity();
+  // this.submit()
+  // this.validateForm();
+
+  // document.getElementById('input-parteq').submit();
+  // document.getElementById('input-parteq').validateForm();
+  // this.validateForm();
+}
+//
+// document.forms["form-partitions"].addEventListener('onblur', function() {
+//   console.log("f")
+//   document.getElementById('input-parteq').reportValidity();
+// }, false);
 //build a tree
 // orientation: "hrz" "vrt"
 
