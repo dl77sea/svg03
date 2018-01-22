@@ -200,8 +200,8 @@ function snarf(node) {
 
 function createLine(x1, y1, x2, y2, id) {
   let line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-  line.setAttribute('id', "seg" + id)
-  line.setAttribute('data', id)
+  line.setAttribute('id', id)
+  line.setAttribute('data', "seg")
   line.setAttribute('class', 'lineseg')
   line.setAttribute('x1', x1)
   line.setAttribute('y1', y1)
@@ -232,6 +232,11 @@ function getFaceHitPt(event) {
   return recHitPt
 }
 
+function segOnDown(event) {
+  console.log("hit seg")
+}
+
+
 function faceOnDown(event) {
   let hitPt = getFaceHitPt(event)
 
@@ -256,9 +261,9 @@ function faceOnDown(event) {
   }
 
   if (partitionType === "single") {
-    partition(findNode(parseInt(event.target.getAttribute('data'))), hitPt.x, hitPt.y, orientation)
+    partition(findNode(parseInt(event.target.getAttribute('id'))), hitPt.x, hitPt.y, orientation)
   } else {
-    partitionEquals(findNode(parseInt(event.target.getAttribute('data'))), partitionNums, orientation)
+    partitionEquals(findNode(parseInt(event.target.getAttribute('id'))), partitionNums, orientation)
   }
 
 }
@@ -268,15 +273,15 @@ var panelThickness = 4;
 function createRect(x, y, w, h, id) {
   // <rect x="100" y="0" width="50" height="100">
   let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-  rect.setAttribute('id', "face" + id)
-  rect.setAttribute('data', id)
+  rect.setAttribute('id', id)
+  rect.setAttribute('data', "face")
   rect.setAttribute('class', "touchface")
   rect.setAttribute('x', x + panelThickness / 2)
   rect.setAttribute('y', y - panelThickness / 2)
   rect.setAttribute('width', w - panelThickness / 2)
   rect.setAttribute('height', h - panelThickness / 2)
 
-  rect.addEventListener('mousedown', faceOnDown)
+  // rect.addEventListener('mousedown', faceOnDown)
   return rect
 }
 
@@ -284,15 +289,19 @@ function getEditState() {
   return "move"
 }
 
+function partitionOnMove(event) {
+  if (updatePSelected) {
+    console.log("moving")
+  }
+}
+
 //refered to from partition (line) callbacks to delegate behavior depending on edit stae
 function partitionEvent(editState, line) {
   console.log("entere partitionEvent")
-  console.log(line.getAttribute('data'))
+
 
   if (getEditState() === "move") {
-    movePartition(findNode(parseInt(line.getAttribute('data'))))
-    console.log("move")
-    console.log(line)
+    updatePartitions = getUpdatePartitions(findNode(parseInt(line.getAttribute('data'))))
   }
 }
 
@@ -313,9 +322,10 @@ function plotPartition(node) {
     //on upperLeftY
     let line = createLine(node.upperLeftX, node.upperLeftY, node.lowerRightX, node.upperLeftY, node.faceId)
 
-    line.addEventListener('mousedown', function(event) {
-      partitionEvent(getEditState(), line)
-    })
+    // update all updatePartitions with move on down event
+    // line.addEventListener('mousedown', function(event) {
+    //   partitionEvent(getEditState(), line)
+    // })
 
     svgEl.append(line)
   }
@@ -356,6 +366,7 @@ function plotCase(w, h) {
   // partition(findNode(1), 10, 3, "vrt")
   // partitionEquals(findNode(7), 3, "vrt")
 
+
   let lineTop = createLine(rootNode.upperLeftX, rootNode.upperLeftY, rootNode.lowerRightX, rootNode.upperLeftY, rootNode.faceId)
   let lineRight = createLine(rootNode.lowerRightX, rootNode.upperLeftY, rootNode.lowerRightX, rootNode.lowerRightY, rootNode.faceId)
   let lineBottom = createLine(rootNode.lowerRightX, rootNode.lowerRightY, rootNode.upperLeftX, rootNode.lowerRightY, rootNode.faceId)
@@ -371,12 +382,12 @@ function plotCase(w, h) {
   traverseTree(plotPartition)
 }
 
-function movePartition(node) {
-  // console.log('movePartition: ', node)
+function getUpdatePartitions(node) {
+  // console.log('getUpdatePartitions: ', node)
   //hrz
-  let hrzUpdatePartitions = []
+  let updatePartitions = []
   if (node.hrz) {
-    console.log("movePartition hrz")
+    console.log("getUpdatePartitions hrz")
     //find all common connections on partition by line-start or end y values
     //hrz plotted on upperLeftY
     let hrzPartitionY = node.upperLeftY
@@ -390,10 +401,20 @@ function movePartition(node) {
         (currentNode.upperLeftY === hrzPartitionY || currentNode.lowerRightY === hrzPartitionY)
       ) {
         // console.log("blarf")
-        console.log(currentNode)
-        // hrzUpdatePartitions.push(findNode(parseInt(event.target.getAttribute('data'))))
+        let point
+        if (currentNode.upperLeftY === hrzPartitionY) {
+          point = "upperLeftY"
+        } else {
+          point = "lowerRightY"
+        }
+        // console.log(currentNode)
+        updatePartitions.push({
+          node: currentNode,
+          end: point
+        })
       }
     })
+    return updatePartitions
   }
   //vrt
   if (node.orientation === "vrt") {
@@ -402,6 +423,25 @@ function movePartition(node) {
   }
 }
 
+function svgElDown(event) {
+
+  if(event.target.getAttribute('data')==="face") {
+    console.log("hit face")
+    faceOnDown(event)
+  }
+
+  if(event.target.getAttribute('data')==="seg") {
+    segOnDown(event)
+  }
+
+}
+
+// add event listeners
+// document.addEventListener("mousedown", editElDown);
+svgEl.addEventListener("mousedown", svgElDown);
+// svgEl.addEventListener("mousemove", svgElMove);
+// svgEl.addEventListener("mouseup", svgElUp);
+// document.addEventListener("mouseup", editElUp);
 
 document.getElementById('form-overall').addEventListener('submit', (event) => {
   event.preventDefault();
