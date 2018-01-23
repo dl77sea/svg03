@@ -1,154 +1,27 @@
 <!DOCTYPE html>
-
 <head>
   <meta charset="utf-8">
-  <title>svg01</title>
+  <title>Partition Test 00</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- <link rel="stylesheet" href="./style.css"> -->
-  <!-- <script defer src="./index.js"></script> -->
-  <script defer src="./case.js"></script>
+  <link rel="stylesheet" href="./style.css">
+
+  <script defer src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script defer src="./index.js"></script>
+  <script defer src="./serviceCase.js"></script>
+  <script defer src="./servicePartition.js"></script>
+  <script defer src="./caseGen.js"></script>
+  <script defer src="./workSpace.js"></script>
+  <script defer src="./casePartition.js"></script>
+
+  <!-- <script defer src="./partition.js"></script> -->
+  <!-- <script defer src="./case.js"></script> -->
 </head>
 
-<style>
-  .corner {
-    r: 2;
-    stroke: none;
-    stroke-width: 0;
-    fill: rgb(0, 0, 0);
-  }
-
-  .origin {
-    r: 4;
-    stroke: none;
-    stroke-width: 0;
-    fill: rgb(0, 0, 0);
-  }
-
-  .cornerhover {
-    stroke: rgb(0, 255, 255);
-  }
-
-  .lineseg {
-    cursor: pointer;
-    stroke: rgb(0, 0, 0);
-    stroke-width: 12;
-    /*stroke-linecap: square;*/
-  }
-
-  .lineseg-red {
-    cursor: pointer;
-    stroke: rgb(255, 0, 0);
-    stroke-width: 4;
-  }
-
-  .lineseg-yellow {
-    cursor: pointer;
-    stroke: rgb(255, 255, 0);
-    stroke-width: 4;
-  }
-
-
-  .lineseg:hover {
-    stroke: rgb(0, 255, 255);
-    /*stroke-linecap: square;*/
-    stroke-width: 12;
-  }
-
-  .linesegselected {
-    stroke: rgb(0, 255, 0);
-    /*stroke-linecap: square;*/
-    stroke-width: 4;
-  }
-
-  .container {
-    display: flex;
-    height: 100vh;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .svg-viewport {
-    width: 400px;
-    height: 400px;
-    color: grey;
-    border-style: dashed;
-    border-radius: 1px;
-  }
-
-  .touchface {
-    fill: rgb(255, 0, 0);
-    fill-opacity: 0.0;
-  }
-  /*button {
-    cursor: pointer;
-    border-width: thin;
-    border-radius: 4px;
-    outline: none;
-  }*/
-
-  .input-parteq {
-    margin-left: 0.25rem;
-  }
-
-  button::selection,
-  button:active,
-  button:focus {
-    /*cursor: pointer;*/
-    /*border-width: thin;*/
-    /*border-radius: 4px;*/
-    /*outline: none;*/
-    /*outline-style: solid;*/
-    /*outline-color: red;*/
-    /*background-color: red;*/
-  }
-
-  input:invalid {
-    border: 2px solid red;
-  }
-  /*input:valid {
-    border: 2px solid black;
-  }*/
-</style>
-
-
-<body>
+<body ng-app="app">
   <div class="container">
-    <!-- <h1>SVG DEMO</h1>
-    <p>Click, hold and drag on the edges of the rectangle to adjust it's shape!</p> -->
-    <div>
-      <form id="form-overall">
-        <div style="width: 9rem; height: auto; background-color: none">
-          <span style="display: block; margin-top: 6px">Width:  <input type="text" name="width" placeholder="Name *" style="width: 5rem; float: right"></span>
-          <span style="display: block; margin-top: 6px">Height: <input type="text" name="height" placeholder="Name *" style="width: 5rem; float: right"></span>
-        </div>
-        <button>submit</button>
-      </form>
-    </div>
-    <br>
-    <span>
-      <button type="button" id="button-partition">divide opening</button>
-      <button type="button" id="button-delete">delete</button>
-      <button type="button" id="button-move">move partition</button>
-      <button type="button" id="button-conceal">conceal opening</button>
-    </span>
-    <div>
-      <form id="form-partitions">
-        <span><input type="radio" name="partition-type" value="single" checked="checked">single partition</input></span>
-        <span><input type="radio" name="partition-type" value="equal">equal partitions</input><input id="input-parteq" class="input-parteq" type="number" min="3" max="12" value="33" required="true"></input></span>
-        <!-- <input type="submit"> -->
-      </form>
-    </div>
-    <div>
-      <span><input type="radio" name="partition-orientation" value="horizontal" checked="checked">horizontal</input></span>
-      <span><input type="radio" name="partition-orientation" value="vertical">vertical</input></span>
-    </div>
-    <br>
-    <svg id="case-svg" class="svg-viewport" viewbox="-200 -200 400 400" transform="scale(1, -1)">
-      <!-- <circle id="corner-ll" class="origin" cx="0" cy="0"/> -->
-    </svg>
-
+    <case-gen></case-gen>
+    <work-space></work-space>
+    <case-partition></case-partition>
   </div>
 </body>
 

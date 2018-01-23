@@ -1,0 +1,9 @@
+<div>
+  <form id="form-overall">
+    <div style="width: 9rem; height: auto; background-color: none">
+      <span style="display: block; margin-top: 6px">Width:  <input type="text" name="width" placeholder="Width" style="width: 5rem; float: right" ng-model="$ctrl.w"></span>
+      <span style="display: block; margin-top: 6px">Height: <input type="text" name="height" placeholder="Height" style="width: 5rem; float: right"ng-model="$ctrl.h"></span>
+    </div>
+    <button ng-click="$ctrl.plotCase($ctrl.w, $ctrl.h)">submit</button>
+  </form>
+</div>
