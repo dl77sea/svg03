@@ -57,8 +57,13 @@
   fill-opacity: 0.0;
 }
 
-.input[type="radio"]:last-child {
-  padding-left: 1.5rem;
+input[type="radio"] {
+  margin-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+button {
+  margin-bottom: 0.5rem;
 }
 
 /*button {
