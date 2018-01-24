@@ -53,32 +53,6 @@ function serviceCase() {
     }
   }
 
-  //functions needed to generate parts of case
-  vm.createLine = function(x1, y1, x2, y2, id) {
-    let line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-    line.setAttribute('id', id)
-    line.setAttribute('data', "seg")
-    line.setAttribute('class', 'lineseg')
-    line.setAttribute('x1', x1)
-    line.setAttribute('y1', y1)
-    line.setAttribute('x2', x2)
-    line.setAttribute('y2', y2)
-    return line
-  }
-
-  vm.createRect = function(x, y, w, h, id) {
-    let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-    rect.setAttribute('id', id)
-    rect.setAttribute('data', "face")
-    rect.setAttribute('class', "touchface")
-    rect.setAttribute('x', x + vm.panelThickness / 2)
-    rect.setAttribute('y', y - vm.panelThickness / 2)
-    rect.setAttribute('width', w - vm.panelThickness / 2)
-    rect.setAttribute('height', h - vm.panelThickness / 2)
-
-    return rect
-  }
-
   vm.traverseTree = function(fn) {
     //handle node 0
     fn(vm.rootNode)
@@ -106,19 +80,11 @@ function serviceCase() {
   }
 
 
-  vm.plotTouchFace = function(node) {
-    // plot touch rectangles (for every empty node)
-    if (node.children.length === 0) {
-      // <rect x="100" y="0" width="50" height="100">
-      let rect = vm.createRect(node.upperLeftX, node.lowerRightY, node.width, node.height, node.faceId)
 
-      vm.svgEl.append(rect)
-    }
-  }
+
 
   // vm.setSvg() {
   //
   // }
-  vm.svgEl = null
   vm.rootNode = null
 }

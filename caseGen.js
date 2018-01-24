@@ -1,5 +1,13 @@
-//$scope, $element, $attrs
-function CaseGenCtrl(serviceCase) {
+// $scope, $element, $attrs
+angular.module('app').component('caseGen', {
+  templateUrl: 'caseGen.html',
+  controller: CaseGenCtrl
+  // bindings: {}
+})
+
+CaseGenCtrl.$inject = ['serviceSvg','serviceCase', 'servicePartition']
+
+function CaseGenCtrl(serviceSvg, serviceCase, servicePartition) {
   var ctrl = this
 
   ctrl.$onInit = function() {
@@ -14,8 +22,8 @@ function CaseGenCtrl(serviceCase) {
 
     idTicker = 0;
 
-    while (serviceCase.svgEl.firstChild) {
-      serviceCase.svgEl.removeChild(serviceCase.svgEl.firstChild);
+    while (serviceSvg.svgEl.firstChild) {
+      serviceSvg.svgEl.removeChild(serviceSvg.svgEl.firstChild);
     }
 
     serviceCase.rootNode = new serviceCase.Node(
@@ -31,24 +39,19 @@ function CaseGenCtrl(serviceCase) {
     // partition(findNode(1), 10, 3, "vrt")
     // partitionEquals(findNode(7), 3, "vrt")
 
-    let lineTop = serviceCase.createLine(serviceCase.rootNode.upperLeftX, serviceCase.rootNode.upperLeftY, serviceCase.rootNode.lowerRightX, serviceCase.rootNode.upperLeftY, serviceCase.rootNode.faceId)
-    let lineRight = serviceCase.createLine(serviceCase.rootNode.lowerRightX, serviceCase.rootNode.upperLeftY, serviceCase.rootNode.lowerRightX, serviceCase.rootNode.lowerRightY, serviceCase.rootNode.faceId)
-    let lineBottom = serviceCase.createLine(serviceCase.rootNode.lowerRightX, serviceCase.rootNode.lowerRightY, serviceCase.rootNode.upperLeftX, serviceCase.rootNode.lowerRightY, serviceCase.rootNode.faceId)
-    let lineLeft = serviceCase.createLine(serviceCase.rootNode.upperLeftX, serviceCase.rootNode.lowerRightY, serviceCase.rootNode.upperLeftX, serviceCase.rootNode.upperLeftY, serviceCase.rootNode.faceId)
-    serviceCase.svgEl.append(lineTop)
-    serviceCase.svgEl.append(lineRight)
-    serviceCase.svgEl.append(lineBottom)
-    serviceCase.svgEl.append(lineLeft)
+    let lineTop = serviceSvg.createLine(serviceCase.rootNode.upperLeftX, serviceCase.rootNode.upperLeftY, serviceCase.rootNode.lowerRightX, serviceCase.rootNode.upperLeftY, serviceCase.rootNode.faceId)
+    let lineRight = serviceSvg.createLine(serviceCase.rootNode.lowerRightX, serviceCase.rootNode.upperLeftY, serviceCase.rootNode.lowerRightX, serviceCase.rootNode.lowerRightY, serviceCase.rootNode.faceId)
+    let lineBottom = serviceSvg.createLine(serviceCase.rootNode.lowerRightX, serviceCase.rootNode.lowerRightY, serviceCase.rootNode.upperLeftX, serviceCase.rootNode.lowerRightY, serviceCase.rootNode.faceId)
+    let lineLeft = serviceSvg.createLine(serviceCase.rootNode.upperLeftX, serviceCase.rootNode.lowerRightY, serviceCase.rootNode.upperLeftX, serviceCase.rootNode.upperLeftY, serviceCase.rootNode.faceId)
+
+    serviceSvg.svgEl.append(lineTop)
+    serviceSvg.svgEl.append(lineRight)
+    serviceSvg.svgEl.append(lineBottom)
+    serviceSvg.svgEl.append(lineLeft)
 
     // create initial touch-face for case (used to be traverseTree(plotPartition))
-    serviceCase.traverseTree(serviceCase.plotTouchFace)
+    console.log("asd",serviceSvg)
+
+    serviceCase.traverseTree(servicePartition.plotTouchFace)
   }
 }
-
-angular.module('app').component('caseGen', {
-  templateUrl: 'caseGen.html',
-  controller: CaseGenCtrl
-  // bindings: {}
-})
-
-CaseGenCtrl.$inject = ['serviceCase']

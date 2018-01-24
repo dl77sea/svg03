@@ -1,11 +1,12 @@
   <div>
     <form id="form-partitions">
-      <!-- <span><input type="radio" name="partition-type" value="single" checked="checked">single partition</input></span> -->
-      <!-- <span><input type="radio" name="partition-type" value="equal">equal partitions</input><input id="input-parteq" class="input-parteq" type="number" min="3" max="12" value="33" required="true"></input></span> -->
+      <span><input type="radio" ng-model="$ctrl.srv.type" value="single">single partition</input></span>
+      <span><input type="radio" ng-model="$ctrl.srv.type" value="equal">equal partitions</input><input ng-model="$ctrl.srv.partitionNums" class="input-parteq" type="number" min="2" max="12" required="true"></input></span>
       <!-- <input type="submit"> -->
     </form>
   </div>
   <div>
-    <span><input ng-click="$ctrl.updateOrientation('hrz')" type="radio" name="partition-orientation" value="horizontal" checked="checked">horizontal</input></span>
-    <span><input ng-click="$ctrl.updateOrientation('vrt')" type="radio" name="partition-orientation" value="vertical">vertical</input></span>
+    <span><input ng-model="$ctrl.srv.orientation" type="radio" value="hrz">horizontal</input></span>
+    <span><input ng-model="$ctrl.srv.orientation" type="radio" value="vrt">vertical</input></span>
   </div>
+  <button ng-click="$ctrl.show()">snarf</button>
