@@ -1,3 +1,4 @@
+//main purpose of this component is to initiate svg canvas and delegate events on it to correct service.
 function WorkSpaceCtrl(serviceSvg, serviceCase, servicePartition) {
   var ctrl = this
 
@@ -9,22 +10,15 @@ function WorkSpaceCtrl(serviceSvg, serviceCase, servicePartition) {
     serviceSvg.svgEl.addEventListener("mousedown", ctrl.svgElDown)
   }
 
-  ctrl.segOnDown = function(event) {
-    console.log("hit seg")
-  }
-
   ctrl.svgElDown = function(event) {
     console.log("svg on down")
-    
+
     //switch for edit mode
     if (serviceCase.editMode === "partition") {
       servicePartition.eventOnDown(event)
     }
-
   }
-
 }
-
 
 angular.module('app').component('workSpace', {
   templateUrl: 'workSpace.html',

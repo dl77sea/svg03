@@ -1,4 +1,4 @@
-// $scope, $element, $attrs
+// case creation feature controller
 angular.module('app').component('caseGen', {
   templateUrl: 'caseGen.html',
   controller: CaseGenCtrl
@@ -15,8 +15,6 @@ function CaseGenCtrl(serviceSvg, serviceCase, servicePartition) {
   }
 
   ctrl.plotCase = function(w, h) {
-    console.log("w: ", w)
-    console.log("h: ", h)
     let rootWidth = w
     let rootHeight = h
 
@@ -50,8 +48,6 @@ function CaseGenCtrl(serviceSvg, serviceCase, servicePartition) {
     serviceSvg.svgEl.append(lineLeft)
 
     // create initial touch-face for case (used to be traverseTree(plotPartition))
-    console.log("asd",serviceSvg)
-
     serviceCase.traverseTree(servicePartition.plotTouchFace)
   }
 }

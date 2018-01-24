@@ -1,4 +1,4 @@
-//$scope, $element, $attrs
+// partitioning feature controller
 function CasePartitionCtrl(servicePartition) {
   var ctrl = this
 
@@ -7,9 +7,6 @@ function CasePartitionCtrl(servicePartition) {
   ctrl.$onInit = function() {
     servicePartition.orientation = "hrz"
     servicePartition.type = "single"
-  }
-  ctrl.show = function() {
-    console.log(servicePartition.orientation)
   }
 }
 

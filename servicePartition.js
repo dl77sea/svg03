@@ -1,6 +1,4 @@
-//single source of truth, state data and controller functions for partitioning
-//only casePartition modifies the data, but all components may use the functions.
-//all components that need to, reference this data for partitioning state info.
+// functions to partition case tree (serviceCase)
 angular.module('app').service('servicePartition', servicePartition)
 
 servicePartition.$inject = ['serviceSvg', 'serviceCase']
@@ -14,7 +12,6 @@ function servicePartition(serviceSvg, serviceCase) {
 
   //will always recieve newly created nodes upon partition-edit-mode user click
   vm.plotPartition = function(node) {
-    console.log(node.children)
 
     //add touch face
     vm.plotTouchFace(node)
@@ -29,7 +26,6 @@ function servicePartition(serviceSvg, serviceCase) {
 
     //vrt plotted on upperLeftX
     if (node.vrt) {
-      console.log(node)
       // on lowerRightX
       // let line=createLine(node.lowerRightX, node.upperLeftY, node.lowerRightX, node.lowerRightY, node.faceId)
       let line = serviceSvg.createLine(node.upperLeftX, node.upperLeftY, node.upperLeftX, node.lowerRightY, node.faceId)
@@ -44,7 +40,6 @@ function servicePartition(serviceSvg, serviceCase) {
   //receives node clicked on
   //partition: adds a stick to clicked on face node, and two children (one for each partition)
   vm.partition = function(clickedFaceNode, faceEventX, faceEventY, orientation) {
-    console.log("entered partition(): ", clickedFaceNode)
 
     //delete touch face from clicked face's node (useful for 3d version)
     vm.deleteTouchFace(clickedFaceNode)
@@ -106,7 +101,6 @@ function servicePartition(serviceSvg, serviceCase) {
   }
 
   vm.partitionEquals = function(clickedFaceNode, divisions, orientation) {
-    console.log("partitionEquals node clicked: ", clickedFaceNode)
     //get partition width and height for equal divisions
     let partitionWidth = clickedFaceNode.width / divisions
     let partitionHeight = clickedFaceNode.height / divisions
@@ -160,7 +154,6 @@ function servicePartition(serviceSvg, serviceCase) {
   }
 
   vm.createRect = function(x, y, w, h, id) {
-    console.log("createRect node args x, y, w, h: ", x, " ", y, " ", w, " ", h)
     let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
     rect.setAttribute('id', id)
     rect.setAttribute('data', "face")
@@ -174,7 +167,6 @@ function servicePartition(serviceSvg, serviceCase) {
   }
 
   vm.plotTouchFace = function(node) {
-    console.log("enter tf")
     // plot touch rectangles (for every empty node)
     if (node.children.length === 0) {
       // <rect x="100" y="0" width="50" height="100">
@@ -210,13 +202,12 @@ function servicePartition(serviceSvg, serviceCase) {
     }
   }
 
-  vm.eventOnDownSeg = function() {
-    console.log("seg")
+  vm.eventOnDownSeg = function(event) {
+    console.log("eventOnDownSeg placeholder")
   }
 
   vm.eventOnDown = function(event) {
-    if (event.target.getAttribute('data') === "face") {
-      console.log("hit face")
+    if (event.target.getAttribute('data') === "face") {      
       vm.eventOnDownFace(event)
     }
     if (event.target.getAttribute('data') === "seg") {

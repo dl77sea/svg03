@@ -79,12 +79,5 @@ function serviceCase() {
     return n
   }
 
-
-
-
-
-  // vm.setSvg() {
-  //
-  // }
   vm.rootNode = null
 }
