@@ -147,8 +147,7 @@ function servicePartition(serviceSvg, serviceCase) {
       }
     }
     //attach touch faces
-    for (child of clickedFaceNode.children) {
-      console.log("pc")
+    for (child of clickedFaceNode.children) {      
       vm.plotPartition(child)
     }
   }

@@ -11,8 +11,6 @@ function WorkSpaceCtrl(serviceSvg, serviceCase, servicePartition) {
   }
 
   ctrl.svgElDown = function(event) {
-    console.log("svg on down")
-
     //switch for edit mode
     if (serviceCase.editMode === "partition") {
       servicePartition.eventOnDown(event)
