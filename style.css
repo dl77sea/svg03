@@ -57,6 +57,10 @@
   fill-opacity: 0.0;
 }
 
+.input[type="radio"]:last-child {
+  padding-left: 1.5rem;
+}
+
 /*button {
     cursor: pointer;
     border-width: thin;
