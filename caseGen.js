@@ -18,8 +18,6 @@ function CaseGenCtrl(serviceSvg, serviceCase, servicePartition) {
     let rootWidth = w
     let rootHeight = h
 
-    idTicker = 0;
-
     while (serviceSvg.svgEl.firstChild) {
       serviceSvg.svgEl.removeChild(serviceSvg.svgEl.firstChild);
     }

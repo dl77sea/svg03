@@ -159,9 +159,9 @@ function servicePartition(serviceSvg, serviceCase) {
     rect.setAttribute('data', "face")
     rect.setAttribute('class', "touchface")
     rect.setAttribute('x', x + serviceCase.panelThickness / 2)
-    rect.setAttribute('y', y - serviceCase.panelThickness / 2)
-    rect.setAttribute('width', w - serviceCase.panelThickness / 2)
-    rect.setAttribute('height', h - serviceCase.panelThickness / 2)
+    rect.setAttribute('y', y + serviceCase.panelThickness / 2)
+    rect.setAttribute('width', w - serviceCase.panelThickness)
+    rect.setAttribute('height', h - serviceCase.panelThickness)
 
     return rect
   }
@@ -207,7 +207,7 @@ function servicePartition(serviceSvg, serviceCase) {
   }
 
   vm.eventOnDown = function(event) {
-    if (event.target.getAttribute('data') === "face") {      
+    if (event.target.getAttribute('data') === "face") {
       vm.eventOnDownFace(event)
     }
     if (event.target.getAttribute('data') === "seg") {
