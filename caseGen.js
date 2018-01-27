@@ -18,10 +18,13 @@ function CaseGenCtrl(serviceSvg, serviceCase, servicePartition) {
     let rootWidth = w
     let rootHeight = h
 
+    //todo: MOVE THIS TO SVG SERVICE
+    //---
     while (serviceSvg.svgEl.firstChild) {
       serviceSvg.svgEl.removeChild(serviceSvg.svgEl.firstChild);
     }
-
+    //---
+    
     serviceCase.rootNode = new serviceCase.Node(
       (rootWidth / 2) * (-1), rootHeight,
       (rootWidth / 2), 0,

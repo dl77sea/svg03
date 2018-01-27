@@ -12,7 +12,6 @@ function serviceSvg() {
     return svgP;
   }
 
-  //functions needed to generate parts of case
   vm.createLine = function(x1, y1, x2, y2, id) {
     let line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line.setAttribute('id', id)
@@ -25,5 +24,22 @@ function serviceSvg() {
     return line
   }
 
+  vm.getLineById = function(idn) {
+    let selector = 'line[id="'+idn+'"]'
+    return vm.svgEl.querySelector(selector)
+  }
+
+  vm.getRectById = function(idn) {
+    let selector = 'rect[id="'+idn+'"]'
+    return vm.svgEl.querySelector(selector)
+  }
+
+  function getSvgPoint(clientX, clientY) {
+    let pt = vm.svgEl.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    let svgP = pt.matrixTransform(vm.svgEl.getScreenCTM().inverse())
+    return svgP;
+  }
 
 }

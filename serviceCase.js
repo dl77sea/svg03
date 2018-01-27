@@ -1,11 +1,12 @@
 //single source of truth, model data for case tree and editing state -all components manipulate this data.
 angular.module('app').service('serviceCase', serviceCase)
+serviceCase.$inject = ['serviceSvg']
 
-function serviceCase() {
+function serviceCase(serviceSvg) {
   var vm = this
+  vm.editMode = "partition"
 
   vm.panelThickness = 4;
-  vm.editMode = "partition"
 
   // use for naming IDs uniquely
   vm.idTicker = 0
@@ -77,6 +78,45 @@ function serviceCase() {
       if (faceId === node.faceId) n = node
     })
     return n
+  }
+
+
+  vm.getConnections = function(node) {
+    let commonLines = []
+    let commonAxis
+    let orientation
+    if (node.hrz) {
+      orientation = "hrz"
+      console.log("found hrz seg")
+      console.log(node)
+      hrzCommonY = node.height
+      commonAxis = hrzCommonY
+
+      selectedLine = serviceSvg.getLineById(node.faceId)
+
+      //find all faces with a common Y value to hrz line face-node picked.
+      //faceId value of face will be same as line's id.
+      //push found lines by id into common-lines list.
+      //points in common-lines list are what will be modified to by move event
+      //(in addition to picked face's line).
+      vm.traverseTree(function(currentNode) {
+        if (
+          (currentNode.vrt) &&
+          (currentNode.upperLeftY === hrzCommonY ||
+          currentNode.lowerRightY === hrzCommonY)
+        ) {
+          commonLines.push(serviceSvg.getLineById(currentNode.faceId))
+        }
+      })
+    }
+
+
+
+    if (node.vrt) {
+      console.log("found vrt seg")
+    }
+
+    return { lines: commonLines, common: commonAxis, orientation: orientation, selectedLine: selectedLine }
   }
 
   vm.rootNode = null

@@ -1,6 +1,5 @@
 // functions to partition case tree (serviceCase)
 angular.module('app').service('servicePartition', servicePartition)
-
 servicePartition.$inject = ['serviceSvg', 'serviceCase']
 
 function servicePartition(serviceSvg, serviceCase) {
@@ -9,6 +8,8 @@ function servicePartition(serviceSvg, serviceCase) {
   vm.partitionNums = 2
   vm.orientation = "hrz"
   vm.type = "single"
+
+  vm.connections = null
 
   //will always recieve newly created nodes upon partition-edit-mode user click
   vm.plotPartition = function(node) {
@@ -110,11 +111,11 @@ function servicePartition(serviceSvg, serviceCase) {
       //hrz
       for (let i = 0; i < divisions; i++) {
         serviceCase.idTicker++
-        if (i === divisions - 1) {
-          stick = serviceCase.stickNone
-        } else {
-          stick = serviceCase.stickHrz
-        }
+          if (i === divisions - 1) {
+            stick = serviceCase.stickNone
+          } else {
+            stick = serviceCase.stickHrz
+          }
         clickedFaceNode.children.push(new serviceCase.Node(
           //submit upper-left face point
           clickedFaceNode.upperLeftX,
@@ -130,11 +131,11 @@ function servicePartition(serviceSvg, serviceCase) {
     if (orientation === "vrt") {
       for (let i = 0; i < divisions; i++) {
         serviceCase.idTicker++
-        if (i === 0) {
-          stick = serviceCase.stickNone
-        } else {
-          stick = serviceCase.stickVrt
-        }
+          if (i === 0) {
+            stick = serviceCase.stickNone
+          } else {
+            stick = serviceCase.stickVrt
+          }
         clickedFaceNode.children.push(new serviceCase.Node(
           //submit upper-left face point
           clickedFaceNode.upperLeftX + partitionWidth * i,
@@ -147,7 +148,7 @@ function servicePartition(serviceSvg, serviceCase) {
       }
     }
     //attach touch faces
-    for (child of clickedFaceNode.children) {      
+    for (child of clickedFaceNode.children) {
       vm.plotPartition(child)
     }
   }
@@ -164,6 +165,18 @@ function servicePartition(serviceSvg, serviceCase) {
 
     return rect
   }
+
+  vm.modRect = function(idn, ulX, ulY, lrX, lrY) {
+    console.log("entered modRect args: ", ulX, ulY, lrX, lrY)
+    let rect = serviceSvg.getRectById(idn)
+    console.log("entered modRect rect: ", rect)
+
+    rect.setAttribute('x',ulX + serviceCase.panelThickness / 2)
+    rect.setAttribute('y',lrY + serviceCase.panelThickness / 2)
+    rect.setAttribute('width', lrX-ulX - serviceCase.panelThickness)
+    rect.setAttribute('height',ulY-lrY - serviceCase.panelThickness)
+  }
+
 
   vm.plotTouchFace = function(node) {
     // plot touch rectangles (for every empty node)
@@ -205,13 +218,148 @@ function servicePartition(serviceSvg, serviceCase) {
     console.log("eventOnDownSeg placeholder")
   }
 
+  //called from workspace
   vm.eventOnDown = function(event) {
+    //make new partitions
     if (event.target.getAttribute('data') === "face") {
       vm.eventOnDownFace(event)
     }
+
+    //init move partitions
     if (event.target.getAttribute('data') === "seg") {
       vm.eventOnDownSeg(event)
+      // vm.commonAxis = serviceCase.findNode(parseInt(event.target.getAttribute('id'))).common
+      let connections = serviceCase.getConnections(serviceCase.findNode(parseInt(event.target.getAttribute('id'))))
+      console.log("common: ", connections.common)
+      //build array of line-ends to be modied by move, from connections lines
+      let endConnections = []
+      for (let line of connections.lines) {
+        if (parseInt(line.getAttribute('y1')) === parseInt(connections.common)) {
+          console.log("found y1: ", line)
+          endConnections.push({
+            line: line,
+            end: 'y1'
+          })
+        } else {
+          endConnections.push({
+            line: line,
+            end: 'y2'
+          })
+        }
+      }
+      connections.endConnections = endConnections
+      vm.connections = connections
+      serviceCase.editMode = "movePartition"
     }
   }
 
+  //move partitions (only handles lines)
+  vm.eventOnMove = function(event) {
+    if (vm.connections !== null) {
+
+      if (vm.connections.orientation === "hrz") {
+        console.log("move")
+        vm.connections.selectedLine.setAttribute('y1', serviceSvg.getSvgPoint(event.clientX, event.clientY).y)
+        vm.connections.selectedLine.setAttribute('y2', serviceSvg.getSvgPoint(event.clientX, event.clientY).y)
+        for (let connection of vm.connections.endConnections) {
+          console.log("connection: ", connection)
+          connection.line.setAttribute(connection.end, serviceSvg.getSvgPoint(event.clientX, event.clientY).y)
+        }
+      }
+    }
+  }
+
+  vm.updateSelectedPartition = function (node) {
+    console.log("entered updateSelectedPartition prm", node) //2
+    console.log("entered updateSelectedPartition adj", serviceCase.findNode(1)) //1
+    node.faceId = 1000
+
+    if(node.hrz) {
+      // node. // use findNode to get reference to modifcation .. 
+    }
+  }
+
+  //updates tree nodes representing connections to selected and svg touch-face rects based on lines
+  vm.cbUpdateConnections = function(currentNode) {
+    console.log("currentNode", currentNode)
+    // console.log("tt node: ", currentNode)
+    //for each node in tree, check if it contains children...
+    if (currentNode.children.length > 0) {
+      //...check if one of the children is an affected line...
+      for (let i = 0; i < currentNode.children.length; i++) {
+        console.log("A: currentNode children length: ", currentNode.children.length)
+        if (currentNode.children[i].vrt || currentNode.children[i].hrz) {
+          console.log("B")
+          for (let line of vm.connections.lines) {
+            console.log("C")
+            console.log("currentNode i: ", i)
+            if (parseInt(currentNode.children[i].faceId) === parseInt(line.id)) {
+              console.log("D")
+              //...update that node's face and rect, and it's sibling to the left (on vrt partitions)...
+              console.log("match node: ", currentNode.children[i])
+              if (currentNode.children[i].vrt) {
+                console.log("match line: ", serviceSvg.getLineById(parseInt(currentNode.children[i].faceId)))
+                let matchLine = serviceSvg.getLineById(parseInt(currentNode.children[i].faceId))
+                currentNode.children[i].upperLeftY = matchLine.getAttribute('y1')
+                currentNode.children[i].lowerRightY = matchLine.getAttribute('y2')
+                currentNode.children[i].height = matchLine.getAttribute('y1') - matchLine.getAttribute('y2')
+                console.log("matchline new height: ", matchLine.getAttribute('y1')-matchLine.getAttribute('y2'))
+                vm.modRect(
+                  parseInt(currentNode.children[i].faceId),
+                  currentNode.children[i].upperLeftX,
+                  currentNode.children[i].upperLeftY,
+                  currentNode.children[i].lowerRightX,
+                  currentNode.children[i].lowerRightY )
+              } else {
+                //hrz
+                // currentNode.children[i].upperLeftX =
+                // currentNode.children[i].upperLeftY =
+                // currentNode.children[i].lowerRightX =
+                // currentNode.children[i].lowerRightY =
+              }
+
+              console.log("adjacent node: ", currentNode.children[i - 1])
+              if (currentNode.children[i].vrt) {
+                console.log("match line: ", serviceSvg.getLineById(parseInt(currentNode.children[i].faceId)))
+                matchLine = serviceSvg.getLineById(parseInt(currentNode.children[i].faceId))
+                currentNode.children[i-1].upperLeftY = matchLine.getAttribute('y1')
+                currentNode.children[i-1].lowerRightY = matchLine.getAttribute('y2')
+                console.log("matchline new height: ", matchLine.getAttribute('y1')-matchLine.getAttribute('y2'))
+                currentNode.children[i-1].height = matchLine.getAttribute('y1')-matchLine.getAttribute('y2')
+                vm.modRect(
+                  parseInt(currentNode.children[i-1].faceId),
+                  currentNode.children[i-1].upperLeftX,
+                  currentNode.children[i-1].upperLeftY,
+                  currentNode.children[i-1].lowerRightX,
+                  currentNode.children[i-1].lowerRightY )
+              } else {
+                //hrz
+                // currentNode.children[i].upperLeftX =
+                // currentNode.children[i].upperLeftY =
+                // currentNode.children[i].lowerRightX =
+                // currentNode.children[i].lowerRightY =
+              }
+
+            }
+          }
+        }
+      }
+    }
+  }
+
+  vm.eventOnUp = function(event) {
+    console.log("service partition up")
+    if (vm.connections !== null) {
+      vm.updateSelectedPartition(serviceCase.findNode(parseInt(vm.connections.selectedLine.getAttribute('id'))))
+
+      if (vm.connections.orientation === "hrz") {
+        console.log("service partition up: hrz")
+        //update tree
+        serviceCase.traverseTree(vm.cbUpdateConnections)
+      }
+      if (vm.connections.orientation === "vrt") {
+        console.log("service partition up: vrt")
+      }
+    }
+  }
 }
